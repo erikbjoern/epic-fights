@@ -35,7 +35,6 @@ export type MainStoreData = {
   } | null
   reachableTiles: ReachableTile[]
   reachableTilesKeyedById: { [id: string | number]: ReachableTile }
-  // defaultPlayers: PlayerClass[]
   players: PlayerClass[]
   activeMenu: MenuType
 }

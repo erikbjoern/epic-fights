@@ -1,6 +1,5 @@
 import constants, { ColorName } from '../constants'
 import Fighter from '../models/Fighter'
-import Player from '../models/Player'
 import Tile from '../models/Tile'
 import { defineStore } from 'pinia'
 import { MainStoreData, MenuType } from './types'
@@ -11,8 +10,7 @@ import { Fighter1, Fighter2, Fighter3, Fighter4 } from '../models/Fighter'
 export const useStore = defineStore('main', {
   state(): MainStoreData {
     return {
-      activeMenu: 'NEW_GAME',
-      // defaultPlayers: [],
+      activeMenu: null,
       initialized: false,
       players: [],
       reachableTiles: [],
@@ -61,28 +59,6 @@ export const useStore = defineStore('main', {
 
       const fighters = [new Fighter1(), new Fighter2(), new Fighter3, new Fighter4()]
       fighters.forEach(f => this.static.fighterPool.push({ fighter: f, maxCount: 2 }))
-
-      // Object.freeze(this.static)
-
-      // const player1 = new Player({
-      //   tiles: this.static.tiles.filter(tile => !tile.isCornerTile && tile.isInFirstRow),
-      //   color: 'blue',
-      // })
-      // const player2 = new Player({
-      //   tiles: this.static.tiles.filter(tile => !tile.isCornerTile && tile.isInLastRow),
-      //   color: 'green',
-      // })
-      // const player3 = new Player({
-      //   tiles: this.static.tiles.filter(tile => !tile.isCornerTile && tile.isInFirstCol),
-      //   color: 'yellow',
-      // })
-      // const player4 = new Player({
-      //   tiles: this.static.tiles.filter(tile => !tile.isCornerTile && tile.isInLastCol),
-      //   color: 'red',
-      // })
-
-      // this.defaultPlayers.push(player1, player2, player3, player4)
-      // this.players = [...this.defaultPlayers]
 
       this.initialized = true
     },

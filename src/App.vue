@@ -3,17 +3,17 @@
   <transition name="fade" mode="out-in" appear>
     <GameMenu v-if="store.initialized && store.activeMenu !== null" class="absolute inset-0 z-50" />
   </transition>
-  <label for="animate"
+  <label for="showSplashScreen"
     class="absolute right-2 top-0 flex gap-2 select-none cursor-pointer text-gray-700 hover:text-gray-900">
-    <input id="animate" type="checkbox" v-model="animate" />
+    <input id="showSplashScreen" type="checkbox" v-model="showSplashScreen" />
     <span>Splashscreen</span>
   </label>
   <Title class="opacity-0 mx-auto" />
   <Title class="absolute left-1/2 -translate-x-1/2 transition-[margin] delay-[1s] duration-[2s]"
-    :class="[!isMounted && animate && 'mt-[40vh]']" />
+    :class="[!isMounted && showSplashScreen && 'mt-[40vh]']" />
   <div
     class="xl:w-full flex flex-col justify-center pb-4 xl:grid m-auto xl:p-10 h-full gap-4 items-stretch bg-white transition-opacity duration-[.75s] delay-[3s] ease-linear"
-    :class="[isMounted || !animate ? 'opacity-100' : 'opacity-0', `w-[${gridSize}]`]" :style="{
+    :class="[isMounted || !showSplashScreen ? 'opacity-100' : 'opacity-0', `w-[${gridSize}]`]" :style="{
       gridTemplateColumns: '1fr min-content 1fr',
       gridTemplateRows: gridSize,
     }">
@@ -54,12 +54,20 @@ const showGameMenuOnEsc = (event: KeyboardEvent) => {
   }
 }
 
-const animate = useStorage('animate', true)
+const showSplashScreen = useStorage('showSplashScreen', true)
 const isMounted = ref(false)
-const isAnimated = ref(false)
+
 onMounted(() => {
-  setTimeout(() => isMounted.value = true, 0)
-  setTimeout(() => isAnimated.value = true, 3500)
+  setTimeout(() => {
+    isMounted.value = true
+    if (!showSplashScreen.value) {
+      store.setActiveMenu('MAIN_MENU')
+    }
+  }, 0)
+
+  setTimeout(() => {
+    store.setActiveMenu('MAIN_MENU')
+  }, 3000)
 
   document.addEventListener('keydown', showGameMenuOnEsc)
 })
