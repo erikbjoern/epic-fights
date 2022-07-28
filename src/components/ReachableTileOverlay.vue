@@ -2,7 +2,7 @@
   <transition :name="tile.isEnemy() && tile.isWithinAttackRange() ? 'fade' : 'fade-30'" appear>
     <div @click="moveSelectedPawn" class="p-2 z-20 bg-gray-200 grid group cursor-pointer"
       :class="tile.isEnemy() && tile.isWithinAttackRange() ? 'opacity-100' : 'opacity-30'"
-      :style="{ transitionDelay: `${(tile.numberOfStepsAway ?? 1) * 50}ms` }" :key="store.selectedPawnId">
+      :style="{ transitionDelay: `${(tile.numberOfStepsAway ?? 1) * 50}ms` }" :key="boardStore.selectedPawnId">
       <div
         class="bg-white h-1/2 w-1/2 m-auto opacity-0 shadow-inner group-hover:opacity-40 rounded-full col-start-1 row-start-1" />
       <div v-if="tile.isEnemy() && tile.isWithinAttackRange()"
@@ -14,16 +14,16 @@
 </template>
 
 <script setup lang="ts">
-import constants from '../constants';
 import { computed, onMounted, ref } from 'vue';
 import { ReachableTile } from '../models/types'
-import { useStore } from "../store";
+import { useBoardStore, useGameStore } from "../store";
 
 const props = defineProps<{ tile: ReachableTile }>()
-const store = useStore()
+const boardStore = useBoardStore()
+const gameStore = useGameStore()
 
 function moveSelectedPawn() {
-  store.moveSelectedPawn(props.tile)
+  boardStore.moveSelectedPawn(props.tile)
 }
 
 const isMounted = ref(false)
@@ -31,7 +31,7 @@ onMounted(() => {
   setTimeout(() => isMounted.value = true, 0)
 })
 
-const playerColor = computed(() => store.selectedPlayerId ? store.players.find(p => p.id == store.selectedPlayerId)?.colorValue() : '')
+const playerColor = computed(() => boardStore.selectedPlayerId ? gameStore.players.find(p => p.id == boardStore.selectedPlayerId)?.colorValue() : '')
 </script>
 
 <style>

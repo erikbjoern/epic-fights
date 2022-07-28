@@ -30,7 +30,7 @@ export default class Tile {
     this.getFighter = function () {
       const store = useStore()
 
-      return store.fightersOnTiles[this.id] ?? null
+      return store.fightersKeyedByTileId[this.id] ?? null
     }
 
     this.isOccupied = function () {

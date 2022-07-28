@@ -1,7 +1,7 @@
 <template>
   <div class="menu-body">
     <h1 class="font-bold mb-2">New Game</h1>
-    <div class="text-left flex flex-col gap-1" :key="rerenderKey">
+    <div class="text-left flex flex-col gap-1">
       <div v-for="(player, i) in chosenPlayers" class="p-2 border flex flex-col gap-2 border-gray-400 rounded"
         :style="{ backgroundColor: player.colorValue(200) }">
         <div class="flex justify-between">
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <button v-if="chosenPlayers.length < store.static.playerSlots.length" @click="addPlayer"
+      <button v-if="chosenPlayers.length < gameStore.static.playerSlots.length" @click="addPlayer"
         class="self-center mx-auto p-2 hover:bg-gray-100 rounded flex items-center gap-2 text-cyan-600">
         <span class="-translate-y-px">&plus;</span><span> Add Player</span>
       </button>
@@ -47,7 +47,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "../../store";
 import { computed, reactive, ref } from "vue";
 import Player, { PlayerClass } from "../../models/Player";
 import FighterToken from "../FighterToken.vue";
@@ -55,18 +54,18 @@ import Tile from "../../models/Tile";
 import Fighter from "../../models/Fighter";
 import { FighterInPool } from "../../store/types";
 import { getFighterOnTile } from "../../store/helpers";
-
-const rerenderKey = ref(0)
+import { useStore, useGameStore } from '../../store'
 
 const store = useStore()
+const gameStore = useGameStore()
 
 const chosenPlayers = ref<PlayerClass[]>([])
 
 function addPlayer() {
-  const playerSlotIndex = store.static.playerSlots.findIndex((_, i) => !chosenPlayers.value.some(p => p.slotIndex == i))
+  const playerSlotIndex = gameStore.static.playerSlots.findIndex((_, i) => !chosenPlayers.value.some(p => p.slotIndex == i))
 
   if (playerSlotIndex !== -1) {
-    const slot = store.static.playerSlots[playerSlotIndex]
+    const slot = gameStore.static.playerSlots[playerSlotIndex]
     chosenPlayers.value.push(new Player({
       color: slot.defaultColor,
       tiles: slot.tiles,
@@ -89,7 +88,7 @@ function getFighter(player: PlayerClass, tile: Tile) {
   return player.fighters.find(f => f.isOnTile(tile)) as Fighter
 }
 
-const availableFighters = store.static.fighterPool
+const availableFighters = gameStore.static.fighterPool
 const numberOfFightersLeft = (player: PlayerClass, fighterData: FighterInPool) => {
   const numberOfFightersUsed = player.fighters.filter(f => f.fighterId == fighterData.fighter.fighterId).length
 
@@ -154,8 +153,8 @@ function selectFighter(player: PlayerClass, fighterInPool: FighterInPool) {
 const allPlayersHaveAtLeastOneFighter = computed(() => !!chosenPlayers.value.every(p => p.fighters.length))
 
 function startGame() {
-  store.players.push(...chosenPlayers.value)
-  store.startGame()
+  gameStore.players.push(...chosenPlayers.value)
+  gameStore.startGame()
   store.activeMenu = null
 }
 </script>

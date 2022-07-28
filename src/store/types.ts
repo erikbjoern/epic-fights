@@ -22,19 +22,25 @@ export type FighterInPool = {
   maxCount: number
 }
 
-export type MainStoreData = {
-  static: {
-    fighterPool: FighterInPool[]
-    tiles: Tile[]
-    playerSlots: PlayerSlot[]
-  }
+export type MainState = {
   initialized: boolean
+  activeMenu: MenuType
+}
+
+export type BoardState = {
   selectedPawn: {
     fighter: Fighter,
     tile: Tile
   } | null
   reachableTiles: ReachableTile[]
   reachableTilesKeyedById: { [id: string | number]: ReachableTile }
+}
+
+export type GameState = {
+  static: {
+    fighterPool: FighterInPool[]
+    tiles: Tile[]
+    playerSlots: PlayerSlot[]
+  }
   players: PlayerClass[]
-  activeMenu: MenuType
 }

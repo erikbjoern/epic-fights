@@ -27,26 +27,26 @@ import { computed } from 'vue';
 import constants from '../constants';
 import Fighter from '../models/Fighter';
 import Tile from '../models/Tile';
-import { useStore } from "../store";
+import { useBoardStore } from "../store";
 
 const props = defineProps<{
   fighter: Fighter
   tile: Tile
 }>()
 
-const store = useStore()
+const boardStore = useBoardStore()
 
 function selectPawn() {
-  if (store.selectedPawnId == props.fighter.id) {
-    store.deselectPawn()
+  if (boardStore.selectedPawnId == props.fighter.id) {
+    boardStore.deselectPawn()
   } else {
-    store.selectPawn(props.fighter, props.tile)
+    boardStore.selectPawn(props.fighter, props.tile)
   }
 }
 
 function attack() {
-  store.attackPawn(props.fighter)
+  boardStore.attackPawn(props.fighter)
 }
 
-const isSelected = computed(() => store.selectedPawnId == props.fighter.id)
+const isSelected = computed(() => boardStore.selectedPawnId == props.fighter.id)
 </script>

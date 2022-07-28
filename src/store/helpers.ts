@@ -2,7 +2,7 @@ import constants from "../constants"
 import Tile from "../models/Tile"
 import { PlayerClass } from "../models/Player"
 import { GridPosition } from "../models/types"
-import { useStore } from '.'
+import { useGameStore } from '.'
 
 const { GRID_HEIGHT, GRID_WIDTH } = constants
 
@@ -50,13 +50,13 @@ export function getTileIdFromPosition(position: GridPosition) {
 }
 
 export function getOrthogonallyDiagonalTiles(position: GridPosition) {
-  const store = useStore()
+  const gameStore = useGameStore()
   const { col, row } = position
 
   return [
-    store.static.tiles[getTileIdFromPosition({ col: col + 1, row })],
-    store.static.tiles[getTileIdFromPosition({ col: col - 1, row })],
-    store.static.tiles[getTileIdFromPosition({ row: row + 1, col })],
-    store.static.tiles[getTileIdFromPosition({ row: row - 1, col })],
+    gameStore.static.tiles[getTileIdFromPosition({ col: col + 1, row })],
+    gameStore.static.tiles[getTileIdFromPosition({ col: col - 1, row })],
+    gameStore.static.tiles[getTileIdFromPosition({ row: row + 1, col })],
+    gameStore.static.tiles[getTileIdFromPosition({ row: row - 1, col })],
   ].filter(v => !!v)
 }

@@ -24,9 +24,9 @@
         height: gridSize,
         width: gridSize
       }">
-      <ReachableTileOverlay v-for="tile in store.reachableTiles" :tile="tile"
+      <ReachableTileOverlay v-for="tile in boardStore.reachableTiles" :tile="tile"
         :style="{ gridColumnStart: tile.col, gridRowStart: tile.row }" />
-      <BoardTile v-for="tile in store.static.tiles" :tile="tile"
+      <BoardTile v-for="tile in gameStore.static.tiles" :tile="tile"
         :style="{ gridColumnStart: tile.col, gridRowStart: tile.row }" />
     </div>
     <div class="row-start-1 col-start-1 grid grid-cols-2 xl:grid-cols-1 gap-4 max-w-full">
@@ -39,14 +39,16 @@
 import { fighterData } from './models/Fighter'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStorage, useWindowSize } from '@vueuse/core'
-import { useStore } from './store'
 import constants from "./constants";
 import BoardTile from './components/BoardTile.vue'
 import FighterInfo from './components/FighterInfo.vue'
 import ReachableTileOverlay from './components/ReachableTileOverlay.vue';
 import Title from "./components/Title.vue";
 import GameMenu from './components/Menues/GameMenu.vue';
+import { useStore, useGameStore, useBoardStore } from './store'
 
+const boardStore = useBoardStore()
+const gameStore = useGameStore()
 const store = useStore()
 const showGameMenuOnEsc = (event: KeyboardEvent) => {
   if (event.key == 'Escape') {
