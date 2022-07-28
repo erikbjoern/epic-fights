@@ -1,13 +1,30 @@
 import { defineStore } from "pinia"
 import constants, { ColorName } from '../constants'
 import { Fighter1, Fighter2, Fighter3, Fighter4 } from '../models/Fighter'
+import { PlayerClass } from "../models/Player"
 import Tile from '../models/Tile'
-import { GameState } from "./types"
+import { GameState, PlayerAction } from "./types"
+import { useBoardStore } from ".";
 
 export const useGameStore = defineStore('gameStore', {
   state(): GameState {
     return {
+      activePlayer: {
+        id: null,
+        availableActions: {
+          movement: {
+            isUsed: false,
+            isAllowed: () => !useGameStore().activePlayer.availableActions.attack.isUsed,
+          },
+          attack: {
+            isUsed: false,
+            isAllowed: () => true
+          }
+        }
+      },
+      currentTurn: 0,
       players: [],
+      randomizedTurnOrderOffset: 0,
       static: {
         fighterPool: [],
         tiles: [],
@@ -52,8 +69,40 @@ export const useGameStore = defineStore('gameStore', {
       const fighters = [new Fighter1(), new Fighter2(), new Fighter3, new Fighter4()]
       fighters.forEach(f => this.static.fighterPool.push({ fighter: f, maxCount: 2 }))
     },
+    nextTurn() {
+      this.currentTurn++
+
+      const newActivePlayer = this.players.find(p => (p.slotIndex + 1) == (((this.currentTurn + this.randomizedTurnOrderOffset) % this.players.length) || this.players.length)) as PlayerClass
+
+      this.activePlayer = { ...this.activePlayer, id: newActivePlayer.id }
+
+      this.resetPlayerActions()
+
+      useBoardStore().deselectPawn()
+    },
+    resetPlayerActions() {
+      Object.keys(this.activePlayer.availableActions).forEach((action) => {
+        this.activePlayer.availableActions[action as PlayerAction].isUsed = false
+      })
+    },
+    spendAction(action: PlayerAction) {
+      this.activePlayer.availableActions[action].isUsed = true
+
+      const allAvailableActionsAreSpent = Object.values(this.activePlayer.availableActions).every(action => {
+        return action.isUsed || !action.isAllowed()
+      })
+
+      if (allAvailableActionsAreSpent) {
+        this.nextTurn()
+      }
+    },
     startGame() {
       this.players.forEach(player => player.assignTileColors())
+      this.currentTurn = 0
+
+      this.randomizedTurnOrderOffset = Math.floor(Math.random() * this.players.length)
+
+      this.nextTurn()
     },
   }
 })

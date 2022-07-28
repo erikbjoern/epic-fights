@@ -20,11 +20,6 @@ export type FighterData = {
 
 export type Public<T> = { [P in keyof T]: T[P] }
 
-export type KebabToCamelCase<S extends string> =
-  S extends `${infer T}-${infer U}` ?
-  `${T}${Capitalize<KebabToCamelCase<U>>}` :
-  S
-
 export type ReachableTile = (Tile & {
   numberOfStepsAway?: number
 })

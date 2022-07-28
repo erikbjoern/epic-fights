@@ -1,13 +1,14 @@
 <template>
   <transition :name="tile.isEnemy() && tile.isWithinAttackRange() ? 'fade' : 'fade-30'" appear>
-    <div @click="moveSelectedPawn" class="p-2 z-20 bg-gray-200 grid group cursor-pointer"
-      :class="tile.isEnemy() && tile.isWithinAttackRange() ? 'opacity-100' : 'opacity-30'"
+    <div @click="moveSelectedPawn" class="p-2 z-20 bg-gray-200 grid group"
+      :class="[tile.isEnemy() && tile.isWithinAttackRange() ? 'opacity-100' : 'opacity-30', selectedPlayerCanMove && 'cursor-pointer']"
       :style="{ transitionDelay: `${(tile.numberOfStepsAway ?? 1) * 50}ms` }" :key="boardStore.selectedPawnId">
-      <div
+      <div v-show="selectedPlayerCanMove"
         class="bg-white h-1/2 w-1/2 m-auto opacity-0 shadow-inner group-hover:opacity-40 rounded-full col-start-1 row-start-1" />
-      <div v-if="tile.isEnemy() && tile.isWithinAttackRange()"
+      <div v-show="tile.isEnemy() && tile.isWithinAttackRange()"
         class="bg-red-700 rounded-lg  h-full w-full col-start-1 row-start-1" />
-      <div v-else-if="!tile.isOccupied()" :style="{ backgroundColor: playerColor }"
+      <div v-show="!(tile.isEnemy() && tile.isWithinAttackRange()) && !tile.isOccupied()"
+        :style="{ backgroundColor: selectedPlayerCanMove ? playerColor : '#777' }"
         class="rounded-lg  h-full w-full col-start-1 row-start-1" />
     </div>
   </transition>
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { ReachableTile } from '../models/types'
+import { PlayerAction } from '../store/types'
 import { useBoardStore, useGameStore } from "../store";
 
 const props = defineProps<{ tile: ReachableTile }>()
@@ -31,7 +33,11 @@ onMounted(() => {
   setTimeout(() => isMounted.value = true, 0)
 })
 
-const playerColor = computed(() => boardStore.selectedPlayerId ? gameStore.players.find(p => p.id == boardStore.selectedPlayerId)?.colorValue() : '')
+const selectedPlayer = computed(() => gameStore.players.find(p => p.id == boardStore.selectedPlayerId))
+
+const selectedPlayerCanMove = computed(() => selectedPlayer.value?.canPerformAction(PlayerAction.movement))
+
+const playerColor = computed(() => selectedPlayer.value?.colorValue() || '')
 </script>
 
 <style>

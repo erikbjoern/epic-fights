@@ -36,11 +36,31 @@ export type BoardState = {
   reachableTilesKeyedById: { [id: string | number]: ReachableTile }
 }
 
+type AvailableAction = {
+  isUsed: boolean
+  isAllowed: () => boolean
+}
+
+export enum PlayerAction {
+  attack = 'attack',
+  movement = 'movement',
+}
+
+type ActivePlayerState = {
+  id: string | null
+  availableActions: {
+    [action in PlayerAction]: AvailableAction
+  }
+}
+
 export type GameState = {
+  activePlayer: ActivePlayerState
+  currentTurn: number
+  players: PlayerClass[]
+  randomizedTurnOrderOffset: number
   static: {
     fighterPool: FighterInPool[]
     tiles: Tile[]
     playerSlots: PlayerSlot[]
   }
-  players: PlayerClass[]
 }

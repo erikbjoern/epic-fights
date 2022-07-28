@@ -11,8 +11,12 @@
   <Title class="opacity-0 mx-auto" />
   <Title class="absolute left-1/2 -translate-x-1/2 transition-[margin] delay-[1s] duration-[2s]"
     :class="[!isMounted && showSplashScreen && 'mt-[40vh]']" />
+  <div class="flex-1 flex flex-col items-center justify-center py-2">
+    <p class="font-semibold leading-snug text-amber-500">Turn {{ gameStore.currentTurn }}</p>
+    <p class="font-semibold leading-snug" :style="{ color: activePlayer?.colorValue() }">{{ activePlayer?.name }}</p>
+  </div>
   <div
-    class="xl:w-full flex flex-col justify-center pb-4 xl:grid m-auto xl:p-10 h-full gap-4 items-stretch bg-white transition-opacity duration-[.75s] delay-[3s] ease-linear"
+    class="xl:w-full flex flex-col justify-start xl:grid mx-auto xl:p-10 gap-4 items-stretch bg-white transition-opacity duration-[.75s] delay-[3s] ease-linear"
     :class="[isMounted || !showSplashScreen ? 'opacity-100' : 'opacity-0', `w-[${gridSize}]`]" :style="{
       gridTemplateColumns: '1fr min-content 1fr',
       gridTemplateRows: gridSize,
@@ -29,10 +33,16 @@
       <BoardTile v-for="tile in gameStore.static.tiles" :tile="tile"
         :style="{ gridColumnStart: tile.col, gridRowStart: tile.row }" />
     </div>
-    <div class="row-start-1 col-start-1 grid grid-cols-2 xl:grid-cols-1 gap-4 max-w-full">
-      <FighterInfo v-for="i in 4" :fighter="fighterData[i as 1 | 2 | 3 | 4]" :key="i" class="flex-1 w-full" />
-    </div>
   </div>
+  <div class="flex py-4">
+    <button class="m-auto btn-cyan w-64" @click="gameStore.nextTurn()">
+      End Turn
+    </button>
+  </div>
+  <div class="row-start-1 col-start-1 grid grid-cols-2 xl:grid-cols-1 gap-4 max-w-full">
+    <FighterInfo v-for="i in 4" :fighter="fighterData[i as 1 | 2 | 3 | 4]" :key="i" class="flex-1 w-full" />
+  </div>
+  <div class="flex-1"></div>
 </template>
 
 <script setup lang="ts">
@@ -82,6 +92,8 @@ onUnmounted(() => {
 const windowSize = useWindowSize()
 
 const gridSize = computed(() => `${Math.ceil(Math.min(windowSize.height.value * 0.7, windowSize.width.value * 0.95))}px`)
+
+const activePlayer = computed(() => gameStore.players.find(p => p.id == gameStore.activePlayer.id))
 </script>
 
 <style>

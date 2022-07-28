@@ -3,7 +3,7 @@ import { getFighterOnTile, getOrthogonallyDiagonalTiles, getTileIdFromPosition, 
 import { ReachableTile } from '../models/types'
 import Fighter from '../models/Fighter'
 import Tile from '../models/Tile'
-import { BoardState } from "./types"
+import { BoardState, PlayerAction } from "./types"
 import { useGameStore } from "./gameStore";
 
 export const useBoardStore = defineStore('boardStore', {
@@ -15,18 +15,8 @@ export const useBoardStore = defineStore('boardStore', {
     }
   },
   actions: {
-    selectPawn(fighter: Fighter, tile: Tile) {
-      if (!fighter || !tile) return
-
-      this.selectedPawn = {
-        fighter,
-        tile,
-      }
-
-      this.reachableTiles = []
-      this.reachableTilesKeyedById = {}
-
-      let edgeTiles = [tile]
+    calculateReachableTiles(origin: Tile, fighter: Fighter) {
+      let edgeTiles = [origin]
 
       // calculate which tiles are reachable (via an unblocked path)
       for (let i = 0; i < fighter.movementPoints; i++) {
@@ -59,18 +49,37 @@ export const useBoardStore = defineStore('boardStore', {
         edgeTiles = newEdgeTiles
       }
     },
+    resetReachableTiles() {
+      this.reachableTiles = []
+      this.reachableTilesKeyedById = {}
+    },
+    selectPawn(fighter: Fighter, tile: Tile) {
+      if (!fighter || !tile) return
+
+      this.selectedPawn = {
+        fighter,
+        tile,
+      }
+
+      this.resetReachableTiles()
+      this.calculateReachableTiles(tile, fighter)
+    },
     deselectPawn() {
       this.selectedPawn = null
-      this.reachableTiles = []
+      this.resetReachableTiles()
     },
     moveSelectedPawn(targetTile: Tile) {
+      const gameStore = useGameStore()
+
       const targetFighter = this.selectedPawn?.fighter
       const { col, row } = targetTile
 
-      if (!targetFighter) return
+      if (!targetFighter?.player.canPerformAction(PlayerAction.movement)) return
 
       [targetFighter.position.col, targetFighter.position.row] = [col, row]
       this.deselectPawn()
+
+      gameStore.spendAction(PlayerAction.movement)
     },
     applyDamage(defender: Fighter, damage: number) {
       defender.healthPoints -= damage
@@ -95,6 +104,7 @@ export const useBoardStore = defineStore('boardStore', {
       }
 
       this.deselectPawn()
+      gameStore.spendAction(PlayerAction.attack)
     },
   },
   getters: {
@@ -107,6 +117,7 @@ export const useBoardStore = defineStore('boardStore', {
       }), {})
     },
     selectedPawnId: state => state.selectedPawn?.fighter.id,
-    selectedPlayerId: state => state.selectedPawn?.fighter.player.id
+    selectedPlayerId: state => state.selectedPawn?.fighter.player.id,
+    activePlayerId: () => useGameStore().activePlayer.id,
   }
 })

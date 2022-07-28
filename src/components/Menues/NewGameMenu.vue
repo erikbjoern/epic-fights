@@ -38,9 +38,7 @@
         <span class="-translate-y-px">&plus;</span><span> Add Player</span>
       </button>
     </div>
-    <button :disabled="!allPlayersHaveAtLeastOneFighter"
-      class="font-[bangers] mt-2 active:bg-cyan-800 bg-cyan-600 text-white rounded shadow py-1 disabled:text-cyan-900 disabled:bg-opacity-25 transition-colors"
-      @click="startGame">
+    <button :disabled="!allPlayersHaveAtLeastOneFighter" class="font-[bangers] mt-2 btn-cyan" @click="startGame">
       Start!
     </button>
   </div>

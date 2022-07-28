@@ -3,9 +3,12 @@ import Fighter, { Fighter1, Fighter2, Fighter3, Fighter4 } from './Fighter'
 import Tile from './Tile'
 import { nanoid } from 'nanoid'
 import { Public } from './types'
+import { useGameStore } from '../store'
+import { PlayerAction } from '../store/types'
 
 export default class Player {
   public id: string
+  public name: string
   public slotIndex: number
   public tiles: Tile[]
   public color: ColorName
@@ -13,6 +16,7 @@ export default class Player {
 
   constructor(initialData: { tiles: Tile[], color: ColorName, slotIndex: number }) {
     this.id = nanoid()
+    this.name = `Player ${initialData.slotIndex + 1}`
     this.color = initialData.color
     this.slotIndex = initialData.slotIndex
     this.tiles = initialData.tiles
@@ -33,6 +37,17 @@ export default class Player {
     const opacityInHex = Math.round(opacity * 2.55).toString(16)
 
     return `${constants.COLORS[this.color][intensity]}${opacityInHex}`
+  }
+
+  public canPerformAction(actionName: PlayerAction) {
+    const gameStore = useGameStore()
+    const action = gameStore.activePlayer.availableActions[actionName]
+
+    return this.isActive() && !action.isUsed && action.isAllowed()
+  }
+
+  public isActive() {
+    return useGameStore().activePlayer.id == this.id
   }
 
   public addFighter(fighterModel: Fighter, tile: Tile) {

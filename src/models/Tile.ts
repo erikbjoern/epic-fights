@@ -1,6 +1,6 @@
 import { CSSProperties } from "vue";
+import { useBoardStore } from "../store";
 import constants from "../constants"
-import { useStore } from "../store";
 import Fighter from "./Fighter";
 
 const { GRID_HEIGHT, GRID_WIDTH } = constants
@@ -28,9 +28,9 @@ export default class Tile {
   constructor(id: number, row: number, col: number) {
 
     this.getFighter = function () {
-      const store = useStore()
+      const boardStore = useBoardStore()
 
-      return store.fightersKeyedByTileId[this.id] ?? null
+      return boardStore.fightersKeyedByTileId[this.id] ?? null
     }
 
     this.isOccupied = function () {
@@ -39,22 +39,22 @@ export default class Tile {
 
     this.isAlly = function () {
       const fighter = this.getFighter()
-      const store = useStore()
+      const boardStore = useBoardStore()
 
-      return fighter?.player.id == store.selectedPlayerId
+      return fighter?.player.id == boardStore.selectedPlayerId
     }
 
     this.isEnemy = function () {
       const fighter = this.getFighter()
-      const store = useStore()
+      const boardStore = useBoardStore()
 
-      return !!(fighter?.isAlive && fighter.player.id !== store.selectedPlayerId)
+      return !!(fighter?.isAlive && fighter.player.id !== boardStore.selectedPlayerId)
     }
 
     this.isWithinAttackRange = function () {
-      const store = useStore()
+      const boardStore = useBoardStore()
 
-      return (store.reachableTilesKeyedById[this.id]?.numberOfStepsAway ?? Infinity) <= (store.selectedPawn?.fighter.range ?? 0)
+      return (boardStore.reachableTilesKeyedById[this.id]?.numberOfStepsAway ?? Infinity) <= (boardStore.selectedPawn?.fighter.range ?? 0)
     }
 
     this.col = col
