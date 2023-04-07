@@ -6,7 +6,7 @@ import { TAbility, FighterData, Passivity, AbilityType, Rarity, TTile } from './
 import { nanoid } from 'nanoid'
 import { useGameStore } from '../store'
 import { PlayerAction } from '../store/types'
-import { getOrthogonallyDiagonalTiles, throwError, validateAbilityUsesLeft } from '../store/helpers'
+import { getOrthogonallyAdjacentTiles, throwError, validateAbilityUsesLeft } from '../store/helpers'
 
 export default class Fighter {
   public healthPoints: number
@@ -101,7 +101,7 @@ export default class Fighter {
    * @returns boolean
    */
   public hasEnemyWithinAttackRange() {
-    return getOrthogonallyDiagonalTiles(this.currentTile)
+    return getOrthogonallyAdjacentTiles(this.currentTile)
       .some(t => !t.isEdgeTile && t.fightersOnTile
         .some(f => f.player.id !== this.player.id && f.isAlive)
       )
@@ -112,7 +112,7 @@ export default class Fighter {
   }
 
   public canMove() {
-    return getOrthogonallyDiagonalTiles(this.currentTile)
+    return getOrthogonallyAdjacentTiles(this.currentTile)
       .some(t => !t.isOccupied() && t.isValidForFighter(this))
   }
 

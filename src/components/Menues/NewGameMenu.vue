@@ -126,13 +126,20 @@ function selectTile(player: TPlayer, targetTile: TTile) {
 }
 
 function selectFighter(player: TPlayer, fighterInPool: FighterInPool) {
-  if (numberOfFightersLeft(player, fighterInPool) <= 0) return
+  const currentlySelectedTile = player.tiles.find(t => t.id == selectedTiles[player.id])
 
-  const tileHasFighter = (tile: TTile) => tile.fightersOnTile.some(f => f.isAlive)
+  if (!currentlySelectedTile && numberOfFightersLeft(player, fighterInPool) <= 0) {
+    return
+  }
 
-  const targetTile = player.tiles.find(tile => selectedTiles[player.id] ? tile.id == selectedTiles[player.id] : !tileHasFighter(tile))
+  const targetTile = currentlySelectedTile || player.tiles.find(tile => !tile.isOccupied())
 
   if (targetTile) {
+    const fighterOnTargetTile = targetTile.fightersOnTile.find(f => f.isAlive) ?? null
+    if (fighterOnTargetTile) {
+      player.removeFighter(fighterOnTargetTile)
+    }
+
     player.addFighter(fighterInPool.fighter, targetTile)
   }
 

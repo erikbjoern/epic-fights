@@ -11,7 +11,7 @@
           </svg>
         </button>
       </div>
-      <h1 v-if="heading" class="font-bold w-full">{{ heading }}</h1>
+      <h1 v-if="heading" class="font-bold w-full leading-none pb-1">{{ heading }}</h1>
       <div class="w-1/2 shrink flex">
         <button @click="store.setActiveMenu(MenuName.null)"
           class="text-xl ml-auto leading-none self-center p-[2px] -mr-1 rounded cursor-pointer hover:bg-gray-200 transition-colors text-gray-900">

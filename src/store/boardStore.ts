@@ -1,6 +1,6 @@
 import Fighter from '../models/Fighter'
 import { defineStore } from "pinia"
-import { getOrthogonallyDiagonalTiles, isWithinGrid, isWithinRangeOrthogonally, throwError } from './helpers'
+import { getOrthogonallyAdjacentTiles, isWithinGrid, isWithinRangeOrthogonally, throwError } from './helpers'
 import { ReachableTile, TTile } from '../models/types'
 import { BoardState } from "./types"
 import { useGameStore } from "./gameStore";
@@ -23,10 +23,10 @@ export const useBoardStore = defineStore('boardStore', {
         const newEdgeTiles: ReachableTile[] = []
 
         edgeTiles.forEach(edgeTile => {
-          const orthogonallyDiagonalTiles = getOrthogonallyDiagonalTiles(edgeTile)
+          const OrthogonallyAdjacentTiles = getOrthogonallyAdjacentTiles(edgeTile)
           const isAlreadyAdded = (tile: TTile) => !!this.reachableTilesKeyedById[tile.id]
 
-          const accessibleTiles = orthogonallyDiagonalTiles.filter(tile =>
+          const accessibleTiles = OrthogonallyAdjacentTiles.filter(tile =>
             isWithinRangeOrthogonally(tile, edgeTile, 1) &&
             !isAlreadyAdded(tile) &&
             tile.isValidForFighter(fighter) &&

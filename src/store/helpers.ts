@@ -30,7 +30,7 @@ export function getTileIdFromPosition(position: GridPosition) {
   return row * GRID_WIDTH - (GRID_WIDTH - col) - 1
 }
 
-export function getOrthogonallyDiagonalTiles(position: GridPosition) {
+export function getOrthogonallyAdjacentTiles(position: GridPosition) {
   const gameStore = useGameStore()
   const { col, row } = position
 
